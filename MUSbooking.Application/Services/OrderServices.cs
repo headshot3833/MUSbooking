@@ -53,6 +53,11 @@ namespace MUSbooking.Application.Services
                         await _equipmentRepository.SaveChangesAsync();
                     }
 
+                    if (equipment.Amount < 0)
+                    {
+                        throw new InvalidOperationException($"оборудование не может быть меньше нуля.");
+                    }
+
                     var equipmentOrder = new EquipmentOrder
                     {
                         EquipmentId = equipment.Id,
@@ -73,7 +78,7 @@ namespace MUSbooking.Application.Services
             }
             catch (Exception ex)
             {
-                return new BaseResult<OrderDto> { ErrorMessage = $"ошибка создания заказа: {ex.Message}" };
+                return new BaseResult<OrderDto> { ErrorMessage = $": {ex.Message}" };
             }
         }
         public async Task<BaseResult<OrderDto>> DeleteOrderAsync(long id)
@@ -122,7 +127,7 @@ namespace MUSbooking.Application.Services
                     "Description" => isAscending ? ordersQuery.OrderBy(o => o.Description) : ordersQuery.OrderByDescending(o => o.Description),
                     "Price" => isAscending ? ordersQuery.OrderBy(o => o.Price) : ordersQuery.OrderByDescending(o => o.Price),
                     "CreatedAt" => isAscending ? ordersQuery.OrderBy(o => o.CreatedAt) : ordersQuery.OrderByDescending(o => o.CreatedAt),
-                    _ => throw new ArgumentException($"ошибка сортировки: {sortBy}", nameof(sortBy))
+                    _ => throw new ArgumentException($"Invalid sort field: {sortBy}", nameof(sortBy))
                 };
 
                 ordersQuery = ordersQuery
@@ -153,7 +158,7 @@ namespace MUSbooking.Application.Services
 
             if (order == null)
             {
-                throw new KeyNotFoundException("Заказ не найден");
+                throw new KeyNotFoundException("Order Not Found");
             }
 
             order.Description = dto.Description;
@@ -175,9 +180,20 @@ namespace MUSbooking.Application.Services
                         Amount = equipmentDto.Amount,
                         Price = equipmentDto.Price
                     };
+                    if (equipment.Amount < 0)
+                    {
+                        throw new InvalidOperationException($"оборудование не может быть меньше нуля.");
+                    }
+
                     await _equipmentRepository.CreateAsync(equipment);
                     await _equipmentRepository.SaveChangesAsync();
                 }
+
+                if (equipment.Amount < 0)
+                {
+                    throw new InvalidOperationException($"оборудование не может быть меньше нуля.");
+                }
+
 
                 var equipmentOrder = new EquipmentOrder
                 {

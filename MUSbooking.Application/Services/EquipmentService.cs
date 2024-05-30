@@ -22,10 +22,6 @@ namespace MUSbooking.Application.Services
         async Task<BaseResult<EquipmentDto>> IEquipmentService.CreateEquipment(CreateEquipmentDto dto)
         {
             var equipment = await _equipmentRepository.GetAll().FirstOrDefaultAsync(x => x.Name == dto.Name);
-            if (equipment != null)
-            {
-                throw new KeyNotFoundException("Equipment not found.");
-            }
 
             equipment = new Equipment()
             {
@@ -33,7 +29,10 @@ namespace MUSbooking.Application.Services
                 Amount = dto.Amount,
                 Price = dto.Price,
             };
-
+            if(equipment.Amount < 0)
+            {
+                throw new InvalidOperationException($"оборудование не может быть меньше нуля.");
+            }
             await _equipmentRepository.CreateAsync(equipment);
             await _equipmentRepository.SaveChangesAsync();
 
