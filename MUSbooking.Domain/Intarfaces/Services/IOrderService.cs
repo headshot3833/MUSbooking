@@ -28,7 +28,7 @@ public interface IOrderService
     /// </summary>
     /// <param name="userId"></param>
     /// <returns></returns>
-    Task<CollectionResult<OrderDto>> GetOrdersAsync(int pageNumber, int pageSize, string sortBy = "CreatedAt", bool isAscending = true);
+    Task<CollectionResult<OrderDto>> GetOrdersAsync(int pageNumber, int pageSize, string sortBy = "CreatedAt");
     /// <summary>
     /// обновление заказа
     /// </summary>

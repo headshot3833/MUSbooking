@@ -102,7 +102,7 @@ namespace MUSbooking.Application.Services
             }
         }
 
-        public async Task<CollectionResult<OrderDto>> GetOrdersAsync(int pageNumber, int pageSize, string sortBy = "CreatedAt", bool isAscending = true)
+        public async Task<CollectionResult<OrderDto>> GetOrdersAsync(int pageNumber, int pageSize, string sortBy = "CreatedAt")
         {
             try
             {
@@ -119,22 +119,15 @@ namespace MUSbooking.Application.Services
                 var totalItemCount = await _orderRepository.GetAll().CountAsync();
 
 
-                IQueryable<Order> ordersQuery = _orderRepository.GetAll().Include(o => o.Equipments);
+                IQueryable<Order> orderQuery = _orderRepository.GetAll().Include(o => o.Equipments);
 
-
-                ordersQuery = sortBy switch
-                {
-                    "Description" => isAscending ? ordersQuery.OrderBy(o => o.Description) : ordersQuery.OrderByDescending(o => o.Description),
-                    "Price" => isAscending ? ordersQuery.OrderBy(o => o.Price) : ordersQuery.OrderByDescending(o => o.Price),
-                    "CreatedAt" => isAscending ? ordersQuery.OrderBy(o => o.CreatedAt) : ordersQuery.OrderByDescending(o => o.CreatedAt),
-                    _ => throw new ArgumentException($"Invalid sort field: {sortBy}", nameof(sortBy))
-                };
-
-                ordersQuery = ordersQuery
+                orderQuery.OrderBy(o => o.CreatedAt);
+               
+                orderQuery = orderQuery
                     .Skip((pageNumber - 1) * pageSize)
                     .Take(pageSize);
 
-                var ordersList = await ordersQuery.ToListAsync();
+                var ordersList = await orderQuery.ToListAsync();
 
                 var orderDtos = ordersList.Select(order => _mapper.Map<OrderDto>(order)).ToList();
 
