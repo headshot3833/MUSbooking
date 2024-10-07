@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MUSbooking.Application.Services;
-using MUSbooking.Application.Validations.FluentEquipment;
 using MUSbooking.Domain.DTO.Equipment;
 using MUSbooking.Domain.DTO.Order;
 using MUSbooking.Domain.Entity;
